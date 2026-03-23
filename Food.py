@@ -155,29 +155,26 @@ elif page == "📋 Entries":
         labels = []
 
         for i, item in enumerate(tracker.items):
-            labels.append(f"{i+1}. {item.food.name} ({item.grams}g)")
+            labels.append(f"{i+1}. {str(item.food.name)} ({item.grams}g)")
             data.append([
-                item.food.name,
-                item.grams,
-                round(item.calc(item.food.cal), 1),
-                round(item.calc(item.food.p), 1),
-                round(item.calc(item.food.c), 1),
-                round(item.calc(item.food.f), 1),
+                str(item.food.name),
+                float(item.grams),
+                float(round(item.calc(item.food.cal), 1)),
+                float(round(item.calc(item.food.p), 1)),
+                float(round(item.calc(item.food.c), 1)),
+                float(round(item.calc(item.food.f), 1)),
             ])
         
-        df = pd.DataFrame(data, columns=["Food", "Grams", "Cal", "Protein", "Carbs", "Fat"])
+        df = pd.DataFrame(
+            data,
+            columns=["Food", "Grams", "Cal", "Protein", "Carbs", "Fat"]
+        )
 
-        # Fix Arrow / LargeUtf8 issue
-        df["Food"] = df["Food"].astype(str)
-        df = df.astype({
-            "Grams": float,
-            "Cal": float,
-            "Protein": float,
-            "Carbs": float,
-            "Fat": float
-        })
+        # 🔥 Force clean Python types (kills LargeUtf8 completely)
+        df = df.to_dict(orient="records")
+        df = pd.DataFrame(df)
 
-        st.dataframe(df, use_container_width=True)
+        st.table(df)
 
         sel = st.selectbox("Delete item", labels)
         idx = labels.index(sel)
