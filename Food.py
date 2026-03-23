@@ -53,7 +53,7 @@ class Tracker:
 # ---------------- DATA ----------------
 
 def load_food():
-    df = pd.read_excel("food_database.xlsx")
+    df = pd.read_excel("Food_Database.xlsx")
     return {
         r["Food Name"]: FoodItem(r["Food Name"], r["Calories"], r["Protein"], r["Carbs"], r["Fat"])
         for _, r in df.iterrows()
