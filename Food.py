@@ -166,7 +166,7 @@ elif page == "📋 Entries":
             ])
 
         df = pd.DataFrame(data, columns=["Food", "Grams", "Cal", "Protein", "Carbs", "Fat"])
-        st.dataframe(df, width="stretch")
+        st.dataframe(df, width=800)
 
         sel = st.selectbox("Delete item", labels)
         idx = labels.index(sel)
