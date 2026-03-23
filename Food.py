@@ -164,9 +164,14 @@ elif page == "📋 Entries":
                 round(item.calc(item.food.c), 1),
                 round(item.calc(item.food.f), 1),
             ])
-
+        
         df = pd.DataFrame(data, columns=["Food", "Grams", "Cal", "Protein", "Carbs", "Fat"])
-        st.dataframe(df, width=800)
+
+        # Convert everything safely
+        for col in df.columns:
+            df[col] = df[col].astype(str)
+
+        st.dataframe(df, use_container_width=True)
 
         sel = st.selectbox("Delete item", labels)
         idx = labels.index(sel)
