@@ -167,9 +167,15 @@ elif page == "📋 Entries":
         
         df = pd.DataFrame(data, columns=["Food", "Grams", "Cal", "Protein", "Carbs", "Fat"])
 
-        # Convert everything safely
-        for col in df.columns:
-            df[col] = df[col].astype(str)
+        # Fix Arrow / LargeUtf8 issue
+        df["Food"] = df["Food"].astype(str)
+        df = df.astype({
+            "Grams": float,
+            "Cal": float,
+            "Protein": float,
+            "Carbs": float,
+            "Fat": float
+        })
 
         st.dataframe(df, use_container_width=True)
 
