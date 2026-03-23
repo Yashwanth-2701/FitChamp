@@ -24,7 +24,12 @@ class MealItem:
         self.grams = grams
 
     def calc(self, value):
-        return (value / 100) * self.grams
+        try:
+            value = float(value)
+            grams = float(self.grams)
+            return (value / 100) * grams
+        except:
+            return 0.0
 
 
 class Tracker:
@@ -54,8 +59,22 @@ class Tracker:
 
 def load_food():
     df = pd.read_excel("Food_Database.xlsx")
+
+    # Clean data properly
+    df["Food Name"] = df["Food Name"].astype(str)
+
+    numeric_cols = ["Calories", "Protein", "Carbs", "Fat"]
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0)
+
     return {
-        r["Food Name"]: FoodItem(r["Food Name"], r["Calories"], r["Protein"], r["Carbs"], r["Fat"])
+        r["Food Name"]: FoodItem(
+            r["Food Name"],
+            r["Calories"],
+            r["Protein"],
+            r["Carbs"],
+            r["Fat"]
+        )
         for _, r in df.iterrows()
     }
 
@@ -170,10 +189,6 @@ elif page == "📋 Entries":
             columns=["Food", "Grams", "Cal", "Protein", "Carbs", "Fat"]
         )
 
-        # 🔥 Force clean Python types (kills LargeUtf8 completely)
-        df = df.to_dict(orient="records")
-        df = pd.DataFrame(df)
-
         st.table(df)
 
         sel = st.selectbox("Delete item", labels)
@@ -231,14 +246,12 @@ elif page == "🧁 Macro Chart":
 
     t = tracker.totals()
 
-    # Convert safely & handle NaN
     protein = float(t.get("p", 0) or 0)
     carbs = float(t.get("c", 0) or 0)
     fat = float(t.get("f", 0) or 0)
 
     values = [protein, carbs, fat]
 
-    # 🚫 Prevent crash if all zero
     if sum(values) == 0:
         st.warning("⚠️ Add food to see macro chart")
     else:
